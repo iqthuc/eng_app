@@ -5,7 +5,6 @@ import (
 	// "log"
 	database "eng_app_module/config"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 
@@ -37,17 +36,20 @@ func getSomeData(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func testStreamMp3(w http.ResponseWriter, r *http.Request) {
-	audioFile, err := os.Open("/home/iqthuc/Downloads/Nang-Tho-Hoang-Dung.mp3")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer audioFile.Close()
-	w.Header().Set("Content-Type", "audio/mpeg")
+	// audioFile, err := os.Open("/home/iqthuc/Downloads/Nang-Tho-Hoang-Dung.mp3")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// defer audioFile.Close()
+	// w.Header().Set("Content-Type", "audio/mpeg")
 
-	_, err = io.Copy(w, audioFile)
-	if err != nil {
-		http.Error(w, "Unable to stream MP3", http.StatusInternalServerError)
-	}
+	// _, err = io.Copy(w, audioFile)
+	// if err != nil {
+	// 	http.Error(w, "Unable to stream MP3", http.StatusInternalServerError)
+	// }
+	audioPath := "/home/iqthuc/Downloads/Nang-Tho-Hoang-Dung.mp3"
+	// Lấy đường dẫn của tệp tin mà client muốn truy cập từ URL.
+	http.ServeFile(w, r, audioPath)
 }
 func testApiMp3(w http.ResponseWriter, r *http.Request) {
 	audioFile, err := os.ReadFile("/home/iqthuc/Downloads/Nang-Tho-Hoang-Dung.mp3")
