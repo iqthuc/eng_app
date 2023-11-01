@@ -6,7 +6,8 @@ import (
 	database "eng_app_module/config"
 	"fmt"
 	"net/http"
-	"os"
+
+	// "os"
 
 	"github.com/gorilla/mux"
 )
@@ -35,39 +36,18 @@ func getSomeData(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Sprintf("id: %s---title:%s \n", id, title)))
 	}
 }
-func testStreamMp3(w http.ResponseWriter, r *http.Request) {
-	// audioFile, err := os.Open("/home/iqthuc/Downloads/Nang-Tho-Hoang-Dung.mp3")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// defer audioFile.Close()
-	// w.Header().Set("Content-Type", "audio/mpeg")
-
-	// _, err = io.Copy(w, audioFile)
-	// if err != nil {
-	// 	http.Error(w, "Unable to stream MP3", http.StatusInternalServerError)
-	// }
-	audioPath := "/home/iqthuc/Downloads/Nang-Tho-Hoang-Dung.mp3"
-	// Lấy đường dẫn của tệp tin mà client muốn truy cập từ URL.
-	http.ServeFile(w, r, audioPath)
-}
-func testApiMp3(w http.ResponseWriter, r *http.Request) {
-	audioFile, err := os.ReadFile("/home/iqthuc/Downloads/Nang-Tho-Hoang-Dung.mp3")
-	if err != nil {
-		fmt.Println(err)
-	}
-	w.Header().Set("Content-Type", "audio/mpeg")
-	w.Write(audioFile)
-}
 
 func main() {
 	mainRouter := mux.NewRouter()
 
 	homeRouter := mainRouter.PathPrefix("/home").Subrouter()
+	imageRouter := mainRouter.PathPrefix("/photos").Subrouter()
 
-	homeRouter.HandleFunc("", getSomeData)
-	homeRouter.HandleFunc("/test-mp3", testApiMp3)
-	homeRouter.HandleFunc("/test-stream-api", testStreamMp3)
+	audioDirectory := "/home/iqthuc/Downloads"
+
+	homeRouter.PathPrefix("/audio").Handler(http.StripPrefix("/home/audio", http.FileServer(http.Dir(audioDirectory))))
+
+	imageRouter.PathPrefix("").Handler(http.StripPrefix("/photos", http.FileServer(http.Dir(audioDirectory))))
 
 	mainServer := http.Server{
 		Addr:    ":3060",
