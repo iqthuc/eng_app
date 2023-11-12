@@ -7,9 +7,9 @@ import (
 )
 
 func NewMediaRoute(group *mux.Router) {
-	mediaDirectory := "/Users/qsoft028/Documents/english_database/AmericanStreamline/Departures"
+	mediaDirectory := "/home/iqthuc/Downloads/data compiled/resources/assets/AmericanStreamline/"
 
 	mediaRoute := group.PathPrefix("/media").Subrouter()
 
-	mediaRoute.PathPrefix("/audio").Handler(http.StripPrefix("/media/audio", http.FileServer(http.Dir(mediaDirectory))))
+	mediaRoute.PathPrefix("/audio/{filepath:.+}").Handler(http.StripPrefix("/media/audio", http.FileServer(http.Dir(mediaDirectory))))
 }
