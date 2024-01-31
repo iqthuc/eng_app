@@ -4,8 +4,10 @@ import (
 	"eng_app_module/database"
 	"eng_app_module/domain/model"
 	"eng_app_module/internal/utils"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func GetBooks(response http.ResponseWriter, request *http.Request) {
@@ -41,8 +43,18 @@ func GetBooks(response http.ResponseWriter, request *http.Request) {
 }
 
 func GetLessons(response http.ResponseWriter, request *http.Request) {
+	query := request.URL.Query()
+	limitParam := query.Get("limit")
+	limit, err := strconv.Atoi(limitParam)
+	if err != nil {
+		limit = 10
+	}
 	db := database.GetDB()
-	rows, err := db.Query(`SELECT books.title , lessons.*  FROM books join lessons on books.id = lessons.book_id;`)
+	querySQL := fmt.Sprintf(`SELECT books.title , lessons.*
+	FROM books
+	join lessons on books.id = lessons.book_id
+	LIMIT %d;`, limit)
+	rows, err := db.Query(querySQL)
 	if err != nil {
 		utils.ReponseCommonError(response)
 		log.Println(err)
