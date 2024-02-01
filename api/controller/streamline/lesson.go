@@ -71,15 +71,16 @@ func GetLessons(response http.ResponseWriter, request *http.Request) {
 func GetLessonDetail(response http.ResponseWriter, request *http.Request) {
 	db := database.GetDB()
 	querySQL := "SELECT books.title , lessons.* FROM books join lessons on books.id = lessons.book_id"
-	log.Println("ssssss")
 
 	// xử lý lấy id trong path
 	path := request.URL.Path
 	parts := strings.Split(path, "/")
+	log.Println(parts)
 	var id string
-	for i, parts := range parts {
-		if parts == "lessons" {
+	for i, part := range parts {
+		if part == "lessons" && i < (len(parts)-1) {
 			id = string(parts[i+1])
+			log.Println(id)
 			break
 		}
 	}
@@ -95,23 +96,35 @@ func GetLessonDetail(response http.ResponseWriter, request *http.Request) {
 	}
 	defer rows.Close()
 
-	var bookList []model.StreamlineBook
+	var lessonList []model.StreamlineLessonWithTitleBook
 
 	for rows.Next() {
-		var book model.StreamlineBook
-		err := rows.Scan(&book.Id, &book.OrdinalId, &book.Title, &book.CollectionId)
+		var lesson model.StreamlineLessonWithTitleBook
+
+		err := rows.Scan(
+			&lesson.TitleBook,
+			&lesson.Id,
+			&lesson.BookId,
+			&lesson.GrammarId,
+			&lesson.OrdinalId,
+			&lesson.Title,
+			&lesson.Audio,
+			&lesson.Html,
+			&lesson.Vocab,
+		)
+
 		if err != nil {
 			utils.ReponseCommonError(response)
 			log.Println(err)
 			return
 		}
-		bookList = append(bookList, book)
+		lessonList = append(lessonList, lesson)
 	}
-	result := model.BaseData[[]model.StreamlineBook]{
+	result := model.BaseData[[]model.StreamlineLessonWithTitleBook]{
 		Message: "success",
 		Code:    http.StatusOK,
 		Status:  1,
-		Data:    bookList,
+		Data:    lessonList,
 	}
 
 	utils.ReponseData(response, result.ToResponseData())
