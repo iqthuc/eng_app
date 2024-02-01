@@ -1,0 +1,10 @@
+# Live Server
+- dùng package https://github.com/codegangsta/gin
+- set port mà app đang lắng nghe
+  ```
+  gin --appPort = 3060
+  ```
+- Tạo proxy server để lắng nghe app trên appPort (truy cập api qua cổng này, gin sẽ lắng nghe appPort)
+  ```
+  gin --port 3000
+  ```
