@@ -75,15 +75,14 @@ func GetLessonDetail(response http.ResponseWriter, request *http.Request) {
 	// xử lý lấy id trong path
 	path := request.URL.Path
 	parts := strings.Split(path, "/")
-	log.Println(parts)
 	var id string
 	for i, part := range parts {
 		if part == "lessons" && i < (len(parts)-1) {
 			id = string(parts[i+1])
-			log.Println(id)
 			break
 		}
 	}
+
 	if id != "" {
 		querySQL += fmt.Sprintf(" WHERE lessons.id = '%s'", id)
 	}
@@ -100,7 +99,6 @@ func GetLessonDetail(response http.ResponseWriter, request *http.Request) {
 
 	for rows.Next() {
 		var lesson model.StreamlineLessonWithTitleBook
-
 		err := rows.Scan(
 			&lesson.TitleBook,
 			&lesson.Id,
